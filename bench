@@ -52,8 +52,8 @@ lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
 ./gradlew bootRun >/dev/null 2>&1 &
 sleep 1
 pid=$(pgrep -n java)
-listen http://127.0.0.1:8080/hello
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080/hello
+listen http://127.0.0.1:8080
+wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
 printf '\n'
 kill "$pid" >/dev/null 2>&1 || true
 wait "$pid" >/dev/null 2>&1 || true
@@ -104,8 +104,8 @@ lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
 ./main >/dev/null 2>&1 &
 sleep 1
 pid=$(pgrep -n main)
-listen http://127.0.0.1:8080/ping
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080/ping
+listen http://127.0.0.1:8080
+wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
 printf '\n'
 kill "$pid" >/dev/null 2>&1 || true
 wait "$pid" >/dev/null 2>&1 || true
@@ -119,8 +119,8 @@ lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
 ./target/release/hello-world >/dev/null 2>&1 &
 sleep 1
 pid=$(pgrep -n hello-world)
-listen http://127.0.0.1:8080/
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080/
+listen http://127.0.0.1:8080
+wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
 printf '\n'
 kill "$pid" >/dev/null 2>&1 || true
 wait "$pid" >/dev/null 2>&1 || true
