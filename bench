@@ -55,22 +55,6 @@ hush
 bench java
 cd ../..
 
-# Flask
-echo "Flask"
-cd flask
-if test ! -d ".venv"
-then
-    python3 -m venv .venv
-fi
-# shellcheck source=.venv/bin/activate
-# shellcheck disable=SC1091
-. .venv/bin/activate
-pip install Flask >/dev/null 2>&1
-hush
-flask --app hello run --port 8080 >/dev/null 2>&1 &
-bench Python
-cd ..
-
 # Fastify
 echo "Fastify"
 cd fastify

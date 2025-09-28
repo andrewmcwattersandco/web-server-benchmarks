@@ -13,7 +13,6 @@ in production.
 * ASP.NET Core (21.3%, 37.1k stars)
 * Express (20.3%, 67.8k stars)
 * Spring Boot (15.6%, 78.5k stars)
-* Flask (13.2%, 70.4k stars)
 * Fastify (3.1%, 34.7k stars)
 * Gin (85.9k stars)
 * Actix Web (23.7k stars)
@@ -25,7 +24,10 @@ in production.
 top of other frameworks, web frameworks predominantly used with specific
 front-ends, "content-driven" frameworks, or full-stack frameworks** like
 Next.js, Django, Laravel, NestJS, Ruby on Rails, Astro, Symfony, or Nuxt.js. We
-do not benchmark **content management systems (CMS)** like WordPress, Drupal.
+no longer benchmark **Flask** due to its origins as an April Fool's joke. It
+was previously the lowest performing framework in our benchmarks by two orders
+of magnitude compared to the next lowest performing framework. We do not
+benchmark **content management systems (CMS)** like WordPress, Drupal.
 We do not benchmark **web frameworks that have not published past major version
 zero,**[3] like FastAPI or Axum. </sub>
 
