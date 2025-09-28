@@ -8,6 +8,10 @@ else
     threads=1
 fi
 
+hush() {
+    lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
+}
+
 listen() {
     while ! curl --fail --show-error --silent "$1" >/dev/null 2>&1
     do
@@ -15,48 +19,40 @@ listen() {
     done
 }
 
+bench() {
+    sleep 1   # laisser le temps de forker si ça daemonize
+    pid=$(pgrep -n "$1")   # le plus récent PID
+    listen http://127.0.0.1:8080
+    wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
+    printf '\n'
+    kill "$pid" >/dev/null 2>&1 || true
+    wait "$pid" >/dev/null 2>&1 || true
+}
+
 # ASP.NET Core
 echo "ASP.NET Core"
 cd "asp.net core/WebApplication1"
 dotnet build --configuration Release >/dev/null 2>&1
-lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
+hush
 ASPNETCORE_HTTP_PORTS=8080 dotnet ./bin/Release/net*/WebApplication1.dll >/dev/null 2>&1 &
-sleep 1   # laisser le temps de forker si ça daemonize
-pid=$(pgrep -n dotnet)   # le plus récent PID
-listen http://127.0.0.1:8080
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
-printf '\n'
-kill "$pid" >/dev/null 2>&1 || true
-wait "$pid" || true
+bench dotnet
 cd ../..
 
 # Express
 echo "Express"
 cd express
 npm install >/dev/null 2>&1
-lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
+hush
 node app.js >/dev/null 2>&1 &
-sleep 1
-pid=$(pgrep -n node)
-listen http://127.0.0.1:8080
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
-printf '\n'
-kill "$pid" >/dev/null 2>&1 || true
-wait "$pid" >/dev/null 2>&1 || true
+bench node
 cd ..
 
 # Spring Boot
 echo "Spring Boot"
 cd "spring boot/demo"
-lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
+hush
 ./gradlew bootRun >/dev/null 2>&1 &
-sleep 1
-pid=$(pgrep -n java)
-listen http://127.0.0.1:8080
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
-printf '\n'
-kill "$pid" >/dev/null 2>&1 || true
-wait "$pid" >/dev/null 2>&1 || true
+bench java
 cd ../..
 
 # Flask
@@ -70,58 +66,34 @@ fi
 # shellcheck disable=SC1091
 . .venv/bin/activate
 pip install Flask >/dev/null 2>&1
-lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
+hush
 flask --app hello run --port 8080 >/dev/null 2>&1 &
-sleep 1
-pid=$(pgrep -n Python)
-listen http://127.0.0.1:8080
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
-printf '\n'
-kill "$pid" >/dev/null 2>&1 || true
-wait "$pid" >/dev/null 2>&1 || true
+bench Python
 cd ..
 
 # Fastify
 echo "Fastify"
 cd fastify
 npm install >/dev/null 2>&1
-lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
+hush
 node server.js >/dev/null 2>&1 &
-sleep 1
-pid=$(pgrep -n node)
-listen http://127.0.0.1:8080
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
-printf '\n'
-kill "$pid" >/dev/null 2>&1 || true
-wait "$pid" >/dev/null 2>&1 || true
+bench node
 cd ..
 
 # Gin
 echo "Gin"
 cd gin
 go build -o main >/dev/null 2>&1
-lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
+hush
 ./main >/dev/null 2>&1 &
-sleep 1
-pid=$(pgrep -n main)
-listen http://127.0.0.1:8080
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
-printf '\n'
-kill "$pid" >/dev/null 2>&1 || true
-wait "$pid" >/dev/null 2>&1 || true
+bench main
 cd ..
 
 # Actix Web
 echo "Actix Web"
 cd "actix web/hello-world"
 cargo build --release >/dev/null 2>&1
-lsof -t -i:8080 | xargs kill -9 >/dev/null 2>&1 || true
+hush
 ./target/release/hello-world >/dev/null 2>&1 &
-sleep 1
-pid=$(pgrep -n hello-world)
-listen http://127.0.0.1:8080
-wrk -t"$threads" -c400 -d30s http://127.0.0.1:8080
-printf '\n'
-kill "$pid" >/dev/null 2>&1 || true
-wait "$pid" >/dev/null 2>&1 || true
+bench hello-world
 cd ../..
